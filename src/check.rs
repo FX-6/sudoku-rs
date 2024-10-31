@@ -1,9 +1,10 @@
 pub fn is_valid(board: &[[usize; 9]; 9], strict: bool) -> bool {
     // Check rows
-    for (row_i, row) in board.iter().enumerate() {
-        if !part_is_valid(row, strict) {
+    #[allow(clippy::needless_range_loop)]
+    for row_i in 0..9 {
+        if !part_is_valid(&board[row_i], strict) {
             if strict {
-                eprintln!("Row {} invalid: {:?}", row_i, row);
+                eprintln!("Row {} invalid: {:?}", row_i, &board[row_i]);
             }
             return false;
         }
@@ -11,8 +12,10 @@ pub fn is_valid(board: &[[usize; 9]; 9], strict: bool) -> bool {
 
     // Check columns
     for col_i in 0..9 {
-        let col_vec: Vec<usize> = board.iter().map(|row| row[col_i]).collect();
-        let col: [usize; 9] = col_vec.try_into().unwrap();
+        let mut col = [0; 9];
+        for row_i in 0..9 {
+            col[row_i] = board[row_i][col_i];
+        }
 
         if !part_is_valid(&col, strict) {
             if strict {
@@ -25,10 +28,10 @@ pub fn is_valid(board: &[[usize; 9]; 9], strict: bool) -> bool {
     // Check 3x3 squares
     for i in 0..3 {
         for j in 0..3 {
-            let square_vec: Vec<usize> = (0..9)
-                .map(|x| board[i * 3 + x / 3][j * 3 + x % 3])
-                .collect();
-            let square: [usize; 9] = square_vec.try_into().unwrap();
+            let mut square = [0; 9];
+            for k in 0..9 {
+                square[k] = board[i * 3 + k / 3][j * 3 + k % 3];
+            }
 
             if !part_is_valid(&square, strict) {
                 if strict {
