@@ -1,0 +1,45 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run debug build with own arg",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "run",
+                "--",
+                "${input:sudokuFile}"
+            ],
+            "problemMatcher": "$rustc"
+        },
+        {
+            "label": "Create release build",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--release"
+            ],
+            "problemMatcher": "$rustc"
+        },
+        {
+            "label": "Run release build with own arg",
+            "type": "shell",
+            "command": "./target/release/sudoku-rs.exe",
+            "args": [
+                "${input:sudokuFile}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "sudokuFile",
+            "description": "Sudoku file that should be solved.",
+            "type": "promptString",
+            "default": "./sudokus/solveable_2.txt"
+        }
+    ]
+}

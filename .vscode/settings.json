@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.runnables.extraArgs": [
+        "./sudokus/solveable_1.txt"
+    ]
+}
