@@ -20,51 +20,61 @@ struct Cli {
 }
 
 fn main() {
+    // Parse the args
     let args = Cli::parse();
 
-    let mut sudoku = match io::read_sudoku_from_file(&args.filename) {
+    // Read the sudoku from the file
+    let sudoku = match io::read_sudoku_from_file(&args.filename) {
         Ok(sudoku) => sudoku,
-        Err(_) => {
+        Err(io::Error::IOError) => {
             eprintln!("Failed to read sudoku from file '{}'", args.filename);
+            return;
+        }
+        Err(io::Error::InvalidSymbolError { row, col, char }) => {
+            eprintln!(
+                "Invalid character '{}' in {}:{}:{}",
+                char, args.filename, row, col
+            );
             return;
         }
     };
 
+    // Only validate or also solve?
     if args.validate {
-        validate(&sudoku);
+        validate(sudoku);
     } else {
-        solve(&mut sudoku);
+        solve(sudoku);
     }
 }
 
-fn validate(sudoku: &[Vec<usize>]) {
+fn validate(sudoku: [[usize; 9]; 9]) {
     println!("Sudoku:");
-    io::print_sudoku(sudoku);
+    io::print_sudoku(&sudoku);
     println!();
 
-    if check::is_sudoku_valid(sudoku, true) {
+    if check::is_valid(&sudoku, true) {
         println!("Sudoku is valid :D");
     } else {
         println!("Sudoku is invalid :(");
     }
 }
 
-fn solve(sudoku: &mut Vec<Vec<usize>>) {
+fn solve(mut sudoku: [[usize; 9]; 9]) {
     println!("Pre-solve:");
-    io::print_sudoku(sudoku);
+    io::print_sudoku(&sudoku);
     println!();
 
     let start = Instant::now();
 
-    backtracking::solve(sudoku);
+    backtracking::solve(&mut sudoku);
 
     let duration = start.elapsed();
 
     println!("Post-solve:");
-    io::print_sudoku(sudoku);
+    io::print_sudoku(&sudoku);
     println!();
 
-    if check::is_sudoku_valid(sudoku, true) {
+    if check::is_valid(&sudoku, true) {
         println!("Sudoku is valid :D");
     } else {
         println!("Sudoku is invalid :(");
